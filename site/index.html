@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://*.supabase.co; img-src 'self'; form-action 'none'; base-uri 'none'">
+  <meta name="theme-color" content="#111415">
+  <title>Atelier 3D | File d’impression</title>
+  <link rel="stylesheet" href="./atelier.css">
+  <script type="module" src="./atelier.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="brand-index">A/03</span><span>Atelier 3D</span></div>
+    <div class="top-right"><span class="secure"><i></i> Espace privé</span><button type="button" id="logout" class="secondary" hidden>Déconnexion</button></div>
+  </header>
+  <main id="login-view" class="access">
+    <section class="access-card" aria-labelledby="login-title">
+      <div class="access-copy">
+        <p class="eyebrow">PORTAIL D’IMPRESSION</p>
+        <h1 id="login-title">Accès à l’atelier</h1>
+        <p class="muted introduction">Saisis le code partagé pour déposer un modèle ou suivre tes impressions.</p>
+        <form id="login-form">
+          <label for="code">Code d’accès</label>
+          <input id="code" name="code" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required placeholder="6 chiffres" autocomplete="off">
+          <button class="primary enter" type="submit">Entrer dans l’atelier <span aria-hidden="true">→</span></button>
+        </form>
+        <p id="login-message" class="message" aria-live="polite"></p>
+      </div>
+      <div class="schematic" aria-hidden="true">
+        <span class="sig-top">FIG. 01</span>
+        <svg viewBox="0 0 360 300" role="presentation" fill="none">
+          <g stroke="currentColor" stroke-width="1" opacity=".28">
+            <path d="M41 203l139 75 139-75-139-75zM64 215l139-75m-116 88l139-75m-116 88l139-75m-116 88l139-75m-116 88l139-75M64 190l139 75M87 178l139 75m-116-88l139 75m-116-88l139 75m-116-88l139 75"/>
+            <path stroke-dasharray="4 6" d="M180 20v253M68 84H292M68 176H292"/>
+          </g>
+          <g stroke="currentColor" stroke-width="1.5">
+            <path d="M99 170l81 44 81-44-81-44zM99 151l81 44 81-44-81-44zM99 132l81 44 81-44-81-44zM99 113l81 44 81-44-81-44zM99 94l81 44 81-44-81-44z"/>
+            <path opacity=".5" d="M99 94v76m81-32v76m81-120v76M99 94l81-16 81 16m-81-44v28m-30-12l60 55m0-55l-60 55"/>
+          </g>
+          <g stroke="currentColor" stroke-width="1"><path d="M286 94v76m-6-76h12m-12 76h12M62 203h-9m4.5-4.5v9m243-4.5h9m-4.5-4.5v9"/></g>
+        </svg>
+        <span class="sig-bottom">FABRICATION ADDITIVE</span>
+      </div>
+    </section>
+  </main>
+  <main id="dashboard" class="workspace" hidden>
+    <div class="page-head">
+      <div><p class="eyebrow">ESPACE DE TRAVAIL</p><h1>Impressions</h1><p class="muted">Dépose un modèle et suis sa fabrication.</p></div>
+      <button class="secondary" id="refresh" type="button">Actualiser</button>
+    </div>
+    <p id="dash-message" class="message" aria-live="polite"></p>
+    <div class="layout">
+      <section class="panel new" aria-labelledby="new-title">
+        <div class="panel-title"><span class="panel-index">01</span><h2 id="new-title">Nouvelle demande</h2></div>
+        <form id="submit-form">
+          <label class="file" for="file">
+            <span aria-hidden="true" class="add">+</span><span id="file-label">Choisir un modèle 3D</span><small>STL, STEP, STP, 3MF · 12 Mio max.</small>
+            <input id="file" name="file" type="file" accept=".stl,.step,.stp,.3mf" required>
+          </label>
+          <label for="name">Nom de l’impression</label><input id="name" name="name" required maxlength="100" placeholder="Ex. Support de bureau">
+          <label for="note">Remarque <span class="muted">(facultative)</span></label><textarea id="note" name="note" rows="2" maxlength="500" placeholder="Une précision pour l’atelier ?"></textarea>
+          <fieldset><legend>Supports</legend><div class="choices">
+            <label><input type="radio" name="supports" value="non" checked> Non</label>
+            <label><input type="radio" name="supports" value="oui"> Oui</label>
+          </div></fieldset>
+          <p class="presets"><strong>8 % · Gyroïde</strong><br><span class="muted">Matériau défini par le profil imprimante.</span></p>
+          <button type="submit" class="primary">Envoyer la demande <span aria-hidden="true">→</span></button>
+          <p id="submit-message" class="message" aria-live="polite"></p>
+        </form>
+      </section>
+      <section class="panel history" aria-labelledby="history-title">
+        <div class="panel-title"><span class="panel-index">02</span><h2 id="history-title">File et historique</h2></div>
+        <div class="filters" role="group" aria-label="Filtrer les demandes">
+          <button type="button" data-filter="all" aria-pressed="true">Toutes</button>
+          <button type="button" data-filter="active" aria-pressed="false">En cours</button>
+          <button type="button" data-filter="closed" aria-pressed="false">Clôturées</button>
+        </div>
+        <div id="jobs" class="jobs"></div>
+        <div class="pager"><button type="button" class="secondary" id="previous" hidden>Plus récentes</button><button type="button" class="secondary" id="more" hidden>Plus anciennes</button></div>
+      </section>
+    </div>
+  </main>
+  <footer><span>ATELIER 3D / FILE D’IMPRESSION</span><span>La mise en machine requiert une validation.</span></footer>
+</body>
+</html>
